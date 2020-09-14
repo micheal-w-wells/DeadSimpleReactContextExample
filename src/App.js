@@ -1,42 +1,63 @@
 import "./styles.css";
 import React from "react";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
+// import { RxDatabase } from "rxdb";
 
-export const nameContext = createContext("apple");
+export const databaseContext = createContext({
+  db: null,
+  isReady: false
+});
 
-export function ProviderComponent(props) {
+export function DatabaseProviderComponent(props) {
   // guts of provider setup would go here
+  const db = "apple";
+  const [isReady, setReady] = useState(false);
+  setTimeout(() => {
+    setReady(true);
+  }, 1000);
   return (
-    <nameContext.Provider value={props.name}>
+    <databaseContext.Provider value={{ db: db, isReady: isReady }}>
       {props.children}
-    </nameContext.Provider>
+    </databaseContext.Provider>
   );
 }
 
-export function ConsumerComponent() {
+export function DatabaseConsumerComponent() {
+  function databaseConsumerAction(databaseObj) {
+    databaseObj.isReady
+      ? console.log("ok ready lets go")
+      : console.log("not ready");
+    return databaseObj.isReady;
+  }
   return (
     // give a name to the context var and use it:
-    <nameContext.Consumer>
-      {(providerVar) => <h1>tag way {providerVar}</h1>}
-    </nameContext.Consumer>
+    <databaseContext.Consumer>
+      {(providerVar) => databaseConsumerAction(providerVar)}
+    </databaseContext.Consumer>
   );
 }
 
-export function ConsumerComponent2() {
+export function DatabaseConsumerComponent2() {
   // give a name to the context var and use it:
-  const providerVar = useContext(nameContext);
-  return <h1>hook way {providerVar}</h1>;
+  const providerVar = useContext(databaseContext);
+  function databaseConsumerAction(databaseObj) {
+    databaseObj.isReady
+      ? console.log("ok ready lets go")
+      : console.log("not ready");
+    return databaseObj.isReady;
+  }
+  return <h1>{databaseConsumerAction(providerVar)}</h1>;
 }
 
 export default function App() {
   return (
     <>
-      <ProviderComponent name="banana">
-        <ConsumerComponent />
-        <ConsumerComponent2 />
-      </ProviderComponent>
+      <DatabaseProviderComponent>
+        <DatabaseConsumerComponent />
+        <DatabaseConsumerComponent2 />
+      </DatabaseProviderComponent>
 
-      <ConsumerComponent />
+      <DatabaseConsumerComponent />
     </>
   );
 }
