@@ -12,7 +12,9 @@ export function DatabaseProviderComponent(props) {
   // guts of provider setup would go here
   const db = "apple";
   const [isReady, setReady] = useState(false);
-  setTimeout(setReady(true), 100);
+  setTimeout(() => {
+    setReady(true);
+  }, 1000);
   return (
     <databaseContext.Provider value={{ db: db, isReady: isReady }}>
       {props.children}
